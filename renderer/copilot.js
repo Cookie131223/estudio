@@ -236,8 +236,8 @@ export function initCopilot({ root, api, voice, toast }) {
     try {
       pip = await dpp.requestWindow({ width: 380, height: 170 });
       pip.document.body.innerHTML = `<style>
-        body{margin:0;background:#1b1815;color:#eee7de;font:15px/1.45 "Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;height:100vh}
-        header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #332d28;font-size:12px;color:#9a9086;font-weight:600}
+        body{margin:0;background:#121214;color:#f3f3f4;font:15px/1.45 "Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;height:100vh}
+        header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #2a2a2f;font-size:12px;color:#9c9ca6;font-weight:600}
         header i{width:8px;height:8px;border-radius:50%;background:#5fd08a}
         #tip{padding:10px 12px;flex:1;overflow:auto}
         #tip.error{color:#ff9a8a}

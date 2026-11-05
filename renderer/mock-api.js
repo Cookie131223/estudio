@@ -31,7 +31,7 @@ export function createMockApi() {
   const listeners = new Set();
   const h = history();
   const state = {
-    settings: { studioName: 'Meu Estúdio', projectDir: 'C:\\Users\\voce\\Projetos\\tripora', autonomy: 'edits', sounds: false, voice: { enabled: false, engine: 'system', full: false } },
+    settings: { studioName: 'COOKIE INTERPRISE', projectDir: 'C:\\Users\\voce\\Projetos\\tripora', autonomy: 'edits', sounds: false, voice: { enabled: false, engine: 'system', full: false } },
     agents: JSON.parse(JSON.stringify(AGENTS)),
     messages: [], tasks: h.tasks, requests: h.requests,
     limits: { codex: { at: Date.now() - 3600e3, data: { primary: { used_percent: 13, window_minutes: 300, resets_in_seconds: 9000 }, secondary: { used_percent: 3, window_minutes: 10080, resets_in_seconds: 259200 } } } },

@@ -34,7 +34,7 @@ const AUTONOMY_HINT = {
   edits: 'Aceitar edições: editar arquivos da pasta é liberado. Comandos e web pedem aprovação.',
   auto: 'Sozinho: tudo liberado, menos o que é destrutivo (apagar, forçar push…).',
 };
-const COLORS = ['#e8795a', '#f2b84b', '#d9534f', '#e86fa0', '#c56cf0', '#8a7cff', '#6c8cff', '#3fb6a8', '#5fbf6a', '#b98e6a', '#9aa0a6'];
+const COLORS = ['#e3342f', '#f2b84b', '#d9534f', '#e86fa0', '#c56cf0', '#8a7cff', '#6c8cff', '#3fb6a8', '#5fbf6a', '#b98e6a', '#9aa0a6'];
 
 let S = { settings: {}, agents: [], messages: [], tasks: [], requests: [], limits: {}, providers: {}, pending: [], busy: false };
 const agentState = {};
@@ -107,7 +107,7 @@ function toast(text, bad = false) {
 
 /* ------------------------------ topo ------------------------------------ */
 function renderHeader() {
-  $('#studioName').textContent = S.settings.studioName || 'Meu Estúdio';
+  $('#studioName').textContent = S.settings.studioName || 'COOKIE INTERPRISE';
   const busyN = Object.values(agentState).filter((s) => s && !['idle', 'coffee', 'done'].includes(s.state)).length;
   $('#teamStatus').textContent = S.busy
     ? `${S.agents.length} agentes · ${busyN} em ação`
@@ -441,10 +441,10 @@ function renderData() {
   const W = 760, H = 210, pad = 30, bw = (W - pad - 10) / days.length;
   const bars = days.map((x, i) => {
     const bh = ((H - 40) * x.n) / max;
-    const lab = (period <= 14 || i % 3 === 0) ? `<text x="${pad + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle" fill="#6f665e" font-size="10">${x.d.getDate()}/${x.d.getMonth() + 1}</text>` : '';
-    return `<rect x="${pad + i * bw + bw * 0.18}" y="${H - 22 - bh}" width="${bw * 0.64}" height="${Math.max(bh, x.n ? 2 : 0)}" rx="3" fill="#e8795a"><title>${x.n} tarefas</title></rect>${lab}`;
+    const lab = (period <= 14 || i % 3 === 0) ? `<text x="${pad + i * bw + bw / 2}" y="${H - 6}" text-anchor="middle" fill="#6a6a73" font-size="10">${x.d.getDate()}/${x.d.getMonth() + 1}</text>` : '';
+    return `<rect x="${pad + i * bw + bw * 0.18}" y="${H - 22 - bh}" width="${bw * 0.64}" height="${Math.max(bh, x.n ? 2 : 0)}" rx="3" fill="#e3342f"><title>${x.n} tarefas</title></rect>${lab}`;
   }).join('');
-  const grid = [0, 0.5, 1].map((f) => { const y = H - 22 - (H - 40) * f; return `<line x1="${pad}" x2="${W}" y1="${y}" y2="${y}" stroke="#2c2622"/><text x="${pad - 6}" y="${y + 3}" text-anchor="end" fill="#6f665e" font-size="10">${Math.round(max * f)}</text>`; }).join('');
+  const grid = [0, 0.5, 1].map((f) => { const y = H - 22 - (H - 40) * f; return `<line x1="${pad}" x2="${W}" y1="${y}" y2="${y}" stroke="#2c2622"/><text x="${pad - 6}" y="${y + 3}" text-anchor="end" fill="#6a6a73" font-size="10">${Math.round(max * f)}</text>`; }).join('');
 
   const perAgent = S.agents.map((a) => {
     const ts = tasks.filter((t) => t.agentId === a.id);
@@ -544,7 +544,7 @@ function renderSettings() {
     b.onclick = () => navigator.clipboard.writeText(b.dataset.copy).then(() => toast('Comando copiado. Cole no PowerShell e aperte Enter.')).catch(() => toast('Não consegui copiar. Selecione o texto e copie.'));
   });
   $('#redetect').onclick = async () => { S.providers = await api.detect(); renderSettings(); };
-  $('#setName').onchange = async (e) => { S.settings = await api.setSettings({ studioName: e.target.value.trim() || 'Meu Estúdio' }); renderHeader(); };
+  $('#setName').onchange = async (e) => { S.settings = await api.setSettings({ studioName: e.target.value.trim() || 'COOKIE INTERPRISE' }); renderHeader(); };
   $('#setLead').onchange = async (e) => { const a = agentById(e.target.value); if (a) { await api.saveAgent({ ...a, isLead: true }); await refresh(); } };
   $('#pickDir').onclick = async () => { const d = await chooseProject(); if (d) { S.settings.projectDir = d; renderHeader(); renderSettings(); } };
   if ($('#openDir')) $('#openDir').onclick = () => api.openFolder();

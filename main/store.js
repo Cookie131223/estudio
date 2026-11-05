@@ -19,6 +19,7 @@ class Store {
       limits: data.limits || {},                                  // último limite informado por provedor
       secrets: data.secrets || {},                                // chave da ElevenLabs (só neste PC)
     };
+    if (!this.data.settings.studioName || this.data.settings.studioName === 'Meu Estúdio') this.data.settings.studioName = DEFAULT_SETTINGS.studioName;
     for (const a of this.data.agents) {
       a.tools = { ...TOOLS_ALL, ...(a.tools || {}) };
       a.team = Array.isArray(a.team) ? a.team : [];

@@ -47,7 +47,7 @@ const DEFAULT_AGENTS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  studioName: 'Meu Estúdio',
+  studioName: 'COOKIE INTERPRISE',
   projectDir: '',
   autonomy: 'edits', // 'ask' | 'edits' | 'auto'
   sounds: true,
