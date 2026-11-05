@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14110f">
+  <title>Estúdio de Agentes</title>
+  <style>
+    :root { --bg: #14110f; --panel: #201c19; --line: #332d28; --text: #eee7de; --muted: #9a9086; --accent: #e8795a; --bad: #ff8d7a; color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif; }
+    body { display: grid; place-items: center; padding: max(16px, env(safe-area-inset-left)) 16px; }
+    form { width: min(360px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 26px 22px; display: flex; flex-direction: column; gap: 14px; }
+    .logo { width: 38px; height: 38px; border-radius: 11px; background: conic-gradient(from 200deg, #e8795a, #f2b84b, #6c8cff, #3fb6a8, #c56cf0, #e8795a); box-shadow: inset 0 0 0 7px var(--panel); }
+    h1 { margin: 4px 0 0; font-size: 22px; }
+    p { margin: 0; color: var(--muted); font-size: 14px; }
+    input { width: 100%; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; outline: 0; }
+    input:focus { border-color: #6a5446; }
+    button { font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 11px; background: var(--accent); color: #1a0f0b; cursor: pointer; }
+    button:disabled { opacity: .6; }
+    .err { color: var(--bad); font-size: 13.5px; min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <form id="f">
+    <span class="logo" aria-hidden="true"></span>
+    <h1>Estúdio de Agentes</h1>
+    <p>Digite a senha para entrar.</p>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Senha" required autofocus>
+    <button id="go" type="submit">Entrar</button>
+    <div class="err" id="err"></div>
+  </form>
+  <script>
+    document.getElementById('f').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const go = document.getElementById('go');
+      const err = document.getElementById('err');
+      go.disabled = true; err.textContent = '';
+      try {
+        const r = await fetch('/api/session', { method: 'POST', headers: { 'content-type': 'application/json', 'x-estudio': '1' }, body: JSON.stringify({ password: document.getElementById('pw').value }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) { location.href = '/'; return; }
+        err.textContent = j.error || 'Não deu certo.';
+      } catch (x) { err.textContent = 'Sem conexão com o servidor.'; }
+      go.disabled = false;
+    });
+  </script>
+</body>
+</html>

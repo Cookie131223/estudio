@@ -1,0 +1,19 @@
+{
+  "name": "estudio-agentes",
+  "productName": "Estúdio de Agentes",
+  "version": "0.1.0",
+  "description": "Claude, ChatGPT (Codex) e Gemini trabalhando como um time, usando as assinaturas que você já tem.",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "node server.js",
+    "janela": "electron .",
+    "test": "node test/run.js"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "electron": "^37.0.0"
+  },
+  "license": "MIT"
+}

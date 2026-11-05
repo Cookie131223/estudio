@@ -1,0 +1,28 @@
+#!/usr/bin/env node
+(function main() {
+// Antigravity CLI falso: prompt vem em -p; suporta --output-format stream-json|json
+const out = (o) => process.stdout.write(JSON.stringify(o) + '\n');
+const args = process.argv.slice(2);
+if (args.includes('--version')) { console.log('agy 1.4.7'); process.exit(0); }
+if (!args.length) {
+  process.stdout.write('\x1b[1mSign in\x1b[0m\nAbra: https://accounts.google.com/o/oauth2/auth?client=agy&state=xyz\nCole o código: ');
+  process.stdin.once('data', (d) => { console.log('\nAuthentication succeeded (' + String(d).trim() + ')'); process.exit(0); });
+  return;
+}
+const prompt = args[args.indexOf('-p') + 1] || '';
+const fmt = args.includes('--output-format') ? args[args.indexOf('--output-format') + 1] : 'text';
+require('fs').writeFileSync(require('path').join(__dirname, '..', '.last-agy-args'), JSON.stringify(args.filter((a) => a !== prompt)));
+if (fmt === 'stream-json' && process.env.FAKE_AGY_NOSTREAM) { console.error("error: invalid value 'stream-json' for '--output-format'"); process.exit(2); }
+if (!prompt.includes('SUA TAREFA') && !prompt.includes('Mensagem do usuário') && !prompt.includes('OK')) { console.error('prompt vazio'); process.exit(1); }
+if (fmt === 'stream-json') {
+  out({ type: 'init', session_id: 'a1', model: 'gemini-3-fake' });
+  out({ type: 'tool_use', tool_name: 'google_web_search', tool_id: 'x', parameters: { query: 'landing page turismo' } });
+  out({ type: 'tool_result', tool_id: 'x', status: 'success', output: '3 resultados' });
+  for (const p of ['Referências: ', 'hero com foto grande, ', 'CTA claro.']) out({ type: 'message', role: 'assistant', content: p, delta: true });
+  out({ type: 'result', status: 'success', stats: { input_tokens: 500, output_tokens: 80 } });
+} else if (fmt === 'json') {
+  console.log(JSON.stringify({ response: 'Referências: hero com foto grande, CTA claro.', stats: { input_tokens: 400, output_tokens: 70 } }, null, 2));
+} else {
+  console.log('Referências: hero com foto grande, CTA claro.');
+}
+})();

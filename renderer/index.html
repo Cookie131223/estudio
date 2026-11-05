@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14110f">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; worker-src 'self' blob:;">
+  <title>Estúdio de Agentes</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../node_modules/three/build/three.module.js",
+        "three/addons/": "../node_modules/three/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <header class="top">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"></span>
+        <div>
+          <b id="studioName">Meu Estúdio</b>
+          <small id="teamStatus">carregando…</small>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist">
+        <button data-tab="office" class="on">Escritório</button>
+        <button data-tab="team">Equipe</button>
+        <button data-tab="copilot">Copiloto</button>
+        <button data-tab="data">Dados</button>
+        <button data-tab="settings">Ajustes</button>
+      </nav>
+      <div class="top-right">
+        <button id="folderBtn" class="ghost" title="Pasta do projeto onde o time trabalha">
+          <svg viewBox="0 0 24 24" width="15" height="15"><path fill="currentColor" d="M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span id="folderName">Escolher pasta</span>
+        </button>
+        <div class="seg" id="autonomy" title="Quanto o time pode fazer sem perguntar">
+          <button data-v="ask">Perguntar tudo</button>
+          <button data-v="edits">Aceitar edições</button>
+          <button data-v="auto">Sozinho</button>
+        </div>
+        <button id="voiceBtn" class="ghost icon" title="Voz dos agentes (liga/desliga)">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M4 9h4l5-4v14l-5-4H4z"/><path class="waves" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="mute" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9l5 6M21 9l-5 6"/></svg>
+        </button>
+        <button id="stopBtn" class="stop" disabled title="Para o time inteiro agora (Ctrl+.)">
+          <span class="sq"></span> Parar
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section id="view-office" class="view on">
+        <div id="office3d"><div class="office-fallback" hidden>Não foi possível abrir o escritório 3D.</div></div>
+        <div class="office-hint">arraste para girar · role para aproximar · clique num agente para conversar</div>
+        <aside id="live">
+          <div class="live-head">
+            <b>Ao vivo</b>
+            <div class="seg small" id="feedFilter">
+              <button data-v="all" class="on">Tudo</button>
+              <button data-v="msgs">Só conversa</button>
+            </div>
+          </div>
+          <div id="feed"></div>
+        </aside>
+        <div id="composer">
+          <div class="targets" id="targets"></div>
+          <div class="box">
+            <textarea id="input" rows="1" placeholder="Fale com o time…"></textarea>
+            <button id="sendBtn" class="send" title="Enviar (Enter)">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 4l7 7-1.4 1.4L13 7.8V20h-2V7.8l-4.6 4.6L5 11z"/></svg>
+            </button>
+          </div>
+          <div class="hints"><span id="autoHint"></span><span><kbd>Enter</kbd> envia · <kbd>Shift</kbd>+<kbd>Enter</kbd> nova linha · <kbd>Ctrl</kbd>+<kbd>.</kbd> para</span></div>
+        </div>
+      </section>
+
+      <section id="view-team" class="view"><div class="page"><div class="page-head"><div><h1>Equipe</h1><p>Cada agente usa uma IA, tem um papel e pode ter parceiros fixos.</p></div></div><div class="cards" id="cards"></div></div></section>
+      <section id="view-copilot" class="view"><div class="page" id="copilotPage"></div></section>
+      <section id="view-data" class="view"><div class="page" id="dataPage"></div></section>
+      <section id="view-settings" class="view"><div class="page" id="settingsPage"></div></section>
+    </main>
+  </div>
+  <div id="modal" hidden></div>
+  <div id="toasts"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

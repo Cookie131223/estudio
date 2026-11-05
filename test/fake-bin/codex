@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+const out = (o) => process.stdout.write(JSON.stringify(o) + '\n');
+const args = process.argv.slice(2);
+if (args.includes('--version')) { console.log('codex-cli 0.70.0'); process.exit(0); }
+let prompt = ''; process.stdin.on('data', (c) => prompt += c);
+process.stdin.on('end', async () => {
+  require('fs').writeFileSync(require('path').join(__dirname, '..', '.last-codex-args'), JSON.stringify(args));
+  out({ type: 'thread.started', thread_id: 'th-1' });
+  out({ type: 'turn.started' });
+  out({ type: 'item.started', item: { id: 'i1', type: 'command_execution', command: 'cat index.html', status: 'in_progress' } });
+  out({ type: 'item.completed', item: { id: 'i1', type: 'command_execution', command: 'cat index.html', aggregated_output: '<h1>oi</h1>', exit_code: 0, status: 'completed' } });
+  out({ id: '0', msg: { type: 'token_count', info: null, rate_limits: { primary: { used_percent: 13, window_minutes: 300, resets_in_seconds: 3600 }, secondary: { used_percent: 3, window_minutes: 10080 } } } });
+  if (process.env.FAKE_SLOW) await new Promise((r) => setTimeout(r, 30000));
+  out({ type: 'item.completed', item: { id: 'i2', type: 'agent_message', text: 'Revisão: falta atributo lang no html (index.html:1).' } });
+  out({ type: 'turn.completed', usage: { input_tokens: 2000, cached_input_tokens: 1500, output_tokens: 300 } });
+});

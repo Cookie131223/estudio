@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+// Claude Code falso: imita --output-format stream-json e o --permission-prompt-tool via MCP.
+const fs = require('fs'); const { spawn } = require('child_process');
+const args = process.argv.slice(2);
+const out = (o) => process.stdout.write(JSON.stringify(o) + '\n');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+if (args.includes('--version')) { console.log('2.9.0 (Claude Code)'); process.exit(0); }
+let prompt = ''; process.stdin.on('data', (c) => prompt += c);
+process.stdin.on('end', async () => {
+  const slow = Number(process.env.FAKE_SLOW || 0);
+  // Copiloto: imagem chega como stream-json (ou como arquivo tela.jpg)
+  if (args.includes('--input-format') || prompt.includes('tela.jpg')) {
+    let text = prompt, hasImage = false;
+    if (args.includes('--input-format')) {
+      if (process.env.FAKE_NO_IMAGE_INPUT) { console.error('error: unknown option --input-format'); process.exit(1); }
+      const msg = JSON.parse(prompt.trim().split('\n')[0]);
+      hasImage = msg.message.content.some((c) => c.type === 'image' && c.source.data.length > 10);
+      text = msg.message.content.find((c) => c.type === 'text').text;
+    } else hasImage = require('fs').existsSync(require('path').join(process.cwd(), 'tela.jpg'));
+    const control = text.includes('liberou você para usar o mouse');
+    const res = JSON.stringify({ dica: hasImage ? (text.includes('perguntou agora') ? 'Resposta: aperte o botão azul.' : 'Clique em Salvar no canto de cima.') : 'sem imagem', nova: true, acao: control ? { tipo: 'clicar', x: 640, y: 360, botao: 'esquerdo', duplo: false } : null });
+    out({ type: 'result', subtype: 'success', is_error: false, result: res, usage: { input_tokens: 1500, output_tokens: 40 } });
+    return;
+  }
+  out({ type: 'system', subtype: 'init', session_id: 'sess-1', model: 'claude-sonnet-fake' });
+  let result;
+  if (prompt.includes('Responda SOMENTE com JSON')) {
+    if (prompt.includes('oi tudo bem')) result = JSON.stringify({ resposta: 'Tudo ótimo! Em que posso ajudar?' });
+    else result = '```json\n' + JSON.stringify({ resumo: 'Farol pesquisa, Traço monta a página, Lupa revisa.', etapas: [
+      { tarefas: [{ agente: 'farol', tarefa: 'Pesquisar referências de landing page de turismo' }] },
+      { tarefas: [{ agente: 'traco', tarefa: 'Criar index.html da landing' }] },
+      { tarefas: [{ agente: 'lupa', tarefa: 'Revisar o index.html' }] }] }) + '\n```';
+  } else if (prompt.includes('O time terminou')) {
+    result = 'Pronto: landing criada em index.html, revisada pelo Lupa.';
+  } else {
+    // Tarefa: pede aprovação para criar arquivo e para rodar comando
+    const cfgPath = args[args.indexOf('--mcp-config') + 1];
+    const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8')).mcpServers.estudio;
+    const mcp = spawn(cfg.command, cfg.args, { env: { ...process.env, ...cfg.env } });
+    let buf = ''; const waiters = {};
+    mcp.stdout.on('data', (c) => { buf += c; let i; while ((i = buf.indexOf('\n')) >= 0) { const m = JSON.parse(buf.slice(0, i)); buf = buf.slice(i + 1); waiters[m.id] && waiters[m.id](m); } });
+    const call = (id, method, params) => new Promise((r) => { waiters[id] = r; mcp.stdin.write(JSON.stringify({ jsonrpc: '2.0', id, method, params }) + '\n'); });
+    await call(1, 'initialize', { protocolVersion: '2025-06-18' });
+    const list = await call(2, 'tools/list', {});
+    if (list.result.tools[0].name !== 'approve') throw new Error('tool');
+    const decisions = [];
+    let id = 3;
+    for (const [tool, input] of [['Write', { file_path: 'index.html', content: '<h1>oi</h1>' }], ['Bash', { command: 'npm test' }], ['Bash', { command: 'rm -rf build' }]]) {
+      out({ type: 'assistant', message: { content: [{ type: 'tool_use', id: 't' + id, name: tool, input }] } });
+      const r = await call(id++, 'tools/call', { name: 'approve', arguments: { tool_name: tool, input } });
+      const d = JSON.parse(r.result.content[0].text);
+      decisions.push(tool + ':' + d.behavior);
+      if (d.behavior === 'allow' && tool === 'Write') fs.writeFileSync(require('path').join(process.cwd(), 'index.html'), input.content);
+      out({ type: 'user', message: { content: [{ type: 'tool_result', tool_use_id: 't' + id, content: d.behavior === 'allow' ? 'ok' : 'negado', is_error: d.behavior !== 'allow' } ] } });
+      if (slow) await sleep(slow);
+    }
+    mcp.stdin.end();
+    result = 'Criei index.html. Decisões: ' + decisions.join(', ');
+  }
+  out({ type: 'assistant', message: { content: [{ type: 'text', text: result }] } });
+  out({ type: 'result', subtype: 'success', is_error: false, result, total_cost_usd: 0.012, usage: { input_tokens: 100, cache_read_input_tokens: 900, output_tokens: 50 } });
+});
