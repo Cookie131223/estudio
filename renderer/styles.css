@@ -33,8 +33,8 @@ kbd { font: 11px var(--mono); background: var(--panel2); border: 1px solid var(-
 
 /* ------------------------------- topo ------------------------------- */
 .top { display: flex; align-items: center; gap: 18px; padding: 0 16px; border-bottom: 1px solid var(--line); background: linear-gradient(180deg, #151517, var(--bg2)); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
-.brand { display: flex; align-items: center; gap: 10px; min-width: 210px; }
-.brand b { display: block; font: 600 17px/1.1 var(--display); font-stretch: condensed; letter-spacing: .6px; text-transform: uppercase; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: none; }
+.brand b { display: block; font: 600 17px/1.1 var(--display); font-stretch: condensed; letter-spacing: .6px; text-transform: uppercase; white-space: nowrap; }
 .brand small { display: block; color: var(--muted); font-size: 12px; }
 .logo { width: 28px; height: 28px; border-radius: 6px; background: #f3f3f4; box-shadow: inset 0 -4px 0 var(--accent); display: grid; place-items: center; }
 .logo::after { content: "CI"; font: 700 13px/1 var(--display); color: #0c0c0e; letter-spacing: .5px; margin-top: -3px; }
