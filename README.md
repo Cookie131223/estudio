@@ -67,6 +67,17 @@ O **Codex** informa o uso dos limites de 5 horas e semanal, e o app mostra isso.
 
 Antes de chamar os CLIs, o app **remove** `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY` e parecidas do ambiente. Assim cada CLI usa o login da assinatura.
 
+## Versão online no Azure (conta de estudante)
+
+1. Deixe este repositório público (Settings → Change visibility).
+2. No portal do Azure, abra o **Cloud Shell** (ícone `>_` no topo), escolha **Bash** e cole:
+   ```
+   curl -fsSL https://raw.githubusercontent.com/Cookie131223/estudio/main/deploy/azure.sh | bash
+   ```
+3. Em uns 10 minutos o script mostra o **endereço** (`https://estudio-xxxxxx.<região>.cloudapp.azure.com`) e a **senha**.
+
+O script cria um servidor Linux pequeno (B2ats v2 ou B1s, que entram nas 750 horas grátis da conta de estudante), instala Docker e Caddy (HTTPS automático) e roda o Estúdio com os dados em `/srv/estudio`. A cada 15 minutos ele confere o GitHub e se atualiza sozinho.
+
 ## Versão online (Railway)
 
 A mesma interface roda num servidor, com senha, para acompanhar e aprovar o trabalho do time pelo celular.
